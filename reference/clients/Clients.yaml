@@ -4,7 +4,7 @@ info:
   version: '1.0'
   description: Find a client of interest
 servers:
-  - url: 'http://localhost:3000'
+  - url: 'http://localhost:3104'
 paths:
   /client:
     parameters: []
@@ -12,7 +12,7 @@ paths:
       summary: Get User Info by User ID
       tags: []
       operationId: get-users-userId
-      description: Retrieve the information of the user with the matching user ID.
+      description: Retrieve clients
       responses:
         '200':
           description: OK
@@ -24,6 +24,32 @@ paths:
                   $ref: '#/components/schemas/Client'
         '404':
           $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+      parameters:
+        - $ref: '#/components/parameters/limit'
+  /client/id:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '404':
+          $ref: '#/components/responses/404'
+        '422':
+          $ref: '#/components/responses/500'
+        '500':
+          $ref: '#/components/responses/500'
+      operationId: get-client-id
+      parameters:
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/type'
+      description: Get a client for supplied parameters
 components:
   schemas:
     Client:
@@ -43,8 +69,8 @@ components:
         csid:
           type: integer
           description: Unique identifier for the given client.
-          default: 0
           format: int32
+          minimum: 1
         firstName:
           type: string
         lastName:
@@ -60,18 +86,22 @@ components:
           format: date
           readOnly: true
         csrn:
-          type: number
+          type: integer
           description: Unique external identifier for the given client.
           default: 0
           format: int32
+          minimum: 0
         tfn:
-          type: number
+          type: integer
           description: The date that the user was created.
           default: 0
           format: int32
+          minimum: 0
         crn:
           type: string
           description: centrelink reference number
+          minLength: 11
+          maxLength: 11
       required:
         - csid
         - firstName
@@ -85,24 +115,48 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              code:
-                type: number
-                default: 401
-              message:
-                type: string
-                default: '401'
+            $ref: ../common/error.v1.json
     '404':
       description: 404 response
       content:
         application/json:
           schema:
             $ref: ../common/error.v1.json
-            properties:
-              code:
-                default: '404'
-              message:
-                default: '404'
+    '500':
+      description: 500 response
+      content:
+        application/json:
+          schema:
+            $ref: ../common/error.v1.json
+  parameters:
+    limit:
+      name: limit
+      in: query
+      required: true
+      schema:
+        type: number
+        default: 500
+        format: int32
+        maximum: 1000
+      description: limit number returned in query
+    id:
+      name: id
+      in: query
+      required: true
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+    type:
+      name: type
+      in: query
+      required: true
+      schema:
+        type: string
+        default: CSRN
+        enum:
+          - CSRN
+          - CSID
+          - TFN
 tags:
   - name: Client
