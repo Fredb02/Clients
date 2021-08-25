@@ -51,10 +51,12 @@ components:
         location:
           type: string
           description: Postal address town
+          readOnly: true
         dateOfBirth:
           type: string
           format: date
           example: 31/01/1970
+          readOnly: true
         csrn:
           type: number
           description: Unique external identifier for the given client.
