@@ -1,0 +1,102 @@
+openapi: 3.1.0
+info:
+  title: Clients
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /clients:
+    parameters: []
+    get:
+      summary: Get User Info by User ID
+      tags: []
+      operationId: get-users-userId
+      description: Retrieve the information of the user with the matching user ID.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
+        '404':
+          $ref: '#/components/responses/404'
+components:
+  schemas:
+    Client:
+      title: Client
+      type: object
+      description: ''
+      examples:
+        - csid: 123456789
+          firstName: Alice
+          lastName: Green
+          location: Cawongla
+          dateOfBirth: 31/01/1970
+          csrn: 1236879244
+          tfn: 96325874106
+          crn: 303458126H
+      properties:
+        csid:
+          type: integer
+          description: Unique identifier for the given client.
+          default: 0
+          format: int32
+        firstName:
+          type: string
+        lastName:
+          type: string
+        location:
+          type: string
+          description: Postal address town
+        dateOfBirth:
+          type: string
+          format: date
+          example: 31/01/1970
+        csrn:
+          type: number
+          description: Unique external identifier for the given client.
+          default: 0
+          format: int32
+        tfn:
+          type: number
+          description: The date that the user was created.
+          default: 0
+          format: int32
+        crn:
+          type: string
+          description: centrelink reference number
+      required:
+        - csid
+        - firstName
+        - lastName
+        - location
+        - dateOfBirth
+        - csrn
+  responses:
+    '401':
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: number
+                default: 401
+              message:
+                type: string
+                default: '401'
+    '404':
+      description: 404 response
+      content:
+        application/json:
+          schema:
+            $ref: ../common/error.v1.json
+            properties:
+              code:
+                default: '404'
+              message:
+                default: '404'
